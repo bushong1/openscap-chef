@@ -1,0 +1,7 @@
+name 'openscap-chef'
+maintainer 'Charles Bushong'
+maintainer_email 'bushong1@gmail.com'
+license 'all_rights'
+description 'Installs/Configures openscap-chef'
+long_description 'Installs/Configures openscap-chef'
+version '0.1.0'
