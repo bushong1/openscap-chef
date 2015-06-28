@@ -7,7 +7,7 @@
 
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
-  Max: 80
+  Max: 120
 
 Style/LeadingCommentSpace:
   Enabled: true
