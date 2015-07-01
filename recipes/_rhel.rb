@@ -15,6 +15,7 @@ build_packages = %w(
   python-devel
   rpm-devel
   swig
+  libtool
 )
 
 scap_security_guide_packages = %w(

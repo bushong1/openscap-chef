@@ -33,31 +33,37 @@ end
 
 git 'openscap' do
   repository node['openscap']['git_repository']
+  revision 'master'
   destination node['openscap']['directory']
   action :sync
 end
 
 git 'openscap-security-guide' do
   repository node['scap_security_guide']['git_repository']
+  revision 'master'
   destination node['scap_security_guide']['directory']
   action :sync
 end
 
 # TODO: Determine most appropriate way to split this into different recipes while staying DRY
 open_scap_guide_version = ''
+open_scap_guide_dist_dir = ''
 case node['platform_family']
 when 'rhel'
   if    node['platform_version'].match(/^5/)
     open_scap_guide_version = 'rhel5'
+    open_scap_guide_dist_dir = 'RHEL/5'
   elsif node['platform_version'].match(/^6/)
     open_scap_guide_version = 'rhel6'
+    open_scap_guide_dist_dir = 'RHEL/6'
   elsif node['platform_version'].match(/^7/)
     open_scap_guide_version = 'rhel7'
+    open_scap_guide_dist_dir = 'RHEL/7'
   else
-    Chef::Log.error "This cookbook is not yet configured for '#{node['platform_family']} v#{node['platform_version']}'."
+    Chef::Log.error "Cannot build scap-security-guide for '#{node['platform_family']} v#{node['platform_version']}'."
   end
 else
-  Chef::Log.error "This cookbook is not yet configured for '#{node['platform_family']}'."
+  Chef::Log.error "Cannot build scap-security-guide for '#{node['platform_family']}'."
 end
 
 # TODO: Determine most appropriate way to split this into different recipes while staying DRY
@@ -67,5 +73,16 @@ bash 'make_openscap_guide' do
   code <<-EOH
     make #{open_scap_guide_version}
   EOH
-  action :run
+
+  subscribes :run, 'git[openscap-security-guide]', :immediately
+  action :nothing
+end
+
+bash 'autogen_openscap' do
+  user 'root'
+  cwd node['openscap']['directory']
+  code '(./autogen.sh && ./configure && make)'
+
+  subscribes :run, 'git[openscap]', :immediately
+  action :nothing
 end
